@@ -1,0 +1,6 @@
+{
+  "name": "منظومة التخطيط المالي واستدامة الدين العام",
+  "description": "منصة حكومية ذكية لإطار التخطيط المالي متوسط الأجل (MTFF) وتحليل استدامة الدين العام ونمذجة سيناريوهات الميزانية لصناع القرار.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

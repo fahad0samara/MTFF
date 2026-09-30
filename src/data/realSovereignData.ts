@@ -1,0 +1,425 @@
+import { FiscalAccountYear, MacroIndicators, DebtTranche } from '../types/fiscal';
+
+export interface IMFIndicatorCitation {
+  code: string;
+  nameEnglish: string;
+  nameArabic: string;
+  sourceInstitution: string;
+}
+
+export interface SovereignCountryProfile {
+  id: string;
+  nameArabic: string;
+  nameEnglish: string;
+  flagEmoji: string;
+  institutionNameArabic: string;
+  centralBankNameArabic: string;
+  centralBankRateLabel: string;
+  centralBankRateValue: number;
+  currencyCode: string;
+  currencyNameArabic: string;
+  exchangeRateToUSD: number; // units of local currency per 1 USD
+  isHydrocarbonEconomy: boolean;
+  revenueLabel1: string; // e.g. Direct Taxes or Oil Revenue
+  revenueLabel2: string; // e.g. Indirect Taxes / VAT
+  revenueLabel3: string; // e.g. Non-Tax & Fees
+  imfDataCitation: string;
+  weoPublicationDate: string;
+  historicalYearsLabel: string;
+  projectionYearsLabel: string;
+  fiscalAnchorTarget: number; // Debt ceiling anchor e.g. 60% Maastricht or national
+  gfnThreshold: number; // Gross Financing Needs threshold % of GDP
+  creditRatings: {
+    moodys: { rating: string; outlook: string };
+    sp: { rating: string; outlook: string };
+    fitch: { rating: string; outlook: string };
+  };
+  policyContext: string;
+  imfIndicators: IMFIndicatorCitation[];
+  macroSeries: MacroIndicators[];
+  fiscalSeries: FiscalAccountYear[];
+  debtTranches: DebtTranche[];
+}
+
+export const OFFICIAL_IMF_INDICATOR_MAPPINGS: IMFIndicatorCitation[] = [
+  {
+    code: 'GGXWDG_NGDP',
+    nameEnglish: 'General government gross debt (% of GDP)',
+    nameArabic: 'إجمالي الدين الحكومي العام (% من الناتج المحلي الإجمالي)',
+    sourceInstitution: 'قواعد بيانات آفاق الاقتصاد العالمي لصندوق النقد الدولي ومكاتب إدارة الدين',
+  },
+  {
+    code: 'GGXCNL_NGDP',
+    nameEnglish: 'General government net lending/borrowing (% of GDP)',
+    nameArabic: 'صافي الإقراض / الاقتراض الحكومي (عجز / فائض الميزانية %)',
+    sourceInstitution: 'صندوق النقد الدولي (IMF WEO) ووزارات الخزانة والمالية',
+  },
+  {
+    code: 'NGDP_RPCH',
+    nameEnglish: 'Gross domestic product, constant prices (% change)',
+    nameArabic: 'معدل نمو الناتج المحلي الإجمالي الحقيقي بالأسعار الثابتة (%)',
+    sourceInstitution: 'صندوق النقد الدولي والهيئات الإحصائية الوطنية الرسمية',
+  },
+  {
+    code: 'PCPIPCH',
+    nameEnglish: 'Inflation, consumer prices (annual % change)',
+    nameArabic: 'معدل التضخم السنوي لمؤشر أسعار المستهلكين (%)',
+    sourceInstitution: 'البنوك المركزية وصندوق النقد الدولي',
+  },
+  {
+    code: 'NGDP',
+    nameEnglish: 'Gross domestic product, current prices (Billions)',
+    nameArabic: 'الناتج المحلي الإجمالي الاسمي بالأسعار الجارية',
+    sourceInstitution: 'قاعدة بيانات صندوق النقد الدولي (IMF WEO)',
+  },
+];
+
+export const REAL_SOVEREIGN_COUNTRIES: SovereignCountryProfile[] = [
+  {
+    id: 'USA',
+    nameArabic: 'الولايات المتحدة الأمريكية',
+    nameEnglish: 'United States',
+    flagEmoji: '🇺🇸',
+    institutionNameArabic: 'وزارة الخزانة الأمريكية ومكتب الخدمة المالية (US Treasury - Bureau of the Fiscal Service)',
+    centralBankNameArabic: 'مجلس الاحتياطي الفيدرالي (Federal Reserve)',
+    centralBankRateLabel: 'سعر الفائدة على الأموال الفيدرالية (Fed Funds Rate)',
+    centralBankRateValue: 4.75,
+    currencyCode: 'USD',
+    currencyNameArabic: 'دولار أمريكي ($)',
+    exchangeRateToUSD: 1.0,
+    isHydrocarbonEconomy: false,
+    revenueLabel1: 'ضرائب الدخل والأرباح والشركات المباشرة',
+    revenueLabel2: 'ضرائب الإنتاج والمبيعات والجمارك غير المباشرة',
+    revenueLabel3: 'إيرادات أرباح الاحتياطي الفيدرالي والرسوم الحكومية',
+    imfDataCitation: 'قاعدة بيانات صندوق النقد الدولي (IMF WEO Oct 2024) ووزارة الخزانة الأمريكية (US Treasury)',
+    weoPublicationDate: 'تشرين الأول/أكتوبر 2024م (البيانات الختامية الرسمية)',
+    historicalYearsLabel: '2022 - 2024م (حسابات ختامية مدققة رسمياً)',
+    projectionYearsLabel: '2025 - 2030م (الميزانية المعتمدة وتقديرات صندوق النقد)',
+    fiscalAnchorTarget: 100.0,
+    gfnThreshold: 20.0,
+    creditRatings: {
+      moodys: { rating: 'Aaa', outlook: 'سلبي (Negative)' },
+      sp: { rating: 'AA+', outlook: 'مستقر (Stable)' },
+      fitch: { rating: 'AA+', outlook: 'مستقر (Stable)' },
+    },
+    policyContext: 'أكبر سوق سيادي لسندات الخزانة في العالم؛ تمثل سندات الخزانة الأمريكية (US Treasuries) معيار السيولة الخالية من المخاطر. تواجه الإدارة المالية عجزاً هيكلياً وتجاوزاً للدين العام نسبة 123% من الناتج، مما يفرض مراقبة وثيقة لكلفة خدمة الفوائد.',
+    imfIndicators: OFFICIAL_IMF_INDICATOR_MAPPINGS,
+    macroSeries: [
+      { year: 2022, realGdpGrowth: 1.9, nominalGdp: 25744, inflationRate: 8.0, centralBankRate: 4.50, sovereignYield10Y: 2.95, sovereignYield2Y: 3.10, exchangeRate: 1.0, interestRateEffective: 2.1 },
+      { year: 2023, realGdpGrowth: 2.5, nominalGdp: 27360, inflationRate: 4.1, centralBankRate: 5.50, sovereignYield10Y: 3.88, sovereignYield2Y: 4.35, exchangeRate: 1.0, interestRateEffective: 2.9 },
+      { year: 2024, realGdpGrowth: 2.8, nominalGdp: 29016, inflationRate: 2.9, centralBankRate: 4.75, sovereignYield10Y: 4.25, sovereignYield2Y: 4.20, exchangeRate: 1.0, interestRateEffective: 3.4 },
+      { year: 2025, realGdpGrowth: 2.2, nominalGdp: 30450, inflationRate: 2.4, centralBankRate: 4.25, sovereignYield10Y: 4.15, sovereignYield2Y: 4.05, exchangeRate: 1.0, interestRateEffective: 3.6 },
+      { year: 2026, realGdpGrowth: 2.0, nominalGdp: 31820, inflationRate: 2.1, centralBankRate: 3.75, sovereignYield10Y: 4.05, sovereignYield2Y: 3.95, exchangeRate: 1.0, interestRateEffective: 3.7 },
+      { year: 2027, realGdpGrowth: 2.1, nominalGdp: 33280, inflationRate: 2.0, centralBankRate: 3.50, sovereignYield10Y: 3.95, sovereignYield2Y: 3.85, exchangeRate: 1.0, interestRateEffective: 3.6 },
+      { year: 2028, realGdpGrowth: 2.1, nominalGdp: 34810, inflationRate: 2.0, centralBankRate: 3.25, sovereignYield10Y: 3.90, sovereignYield2Y: 3.80, exchangeRate: 1.0, interestRateEffective: 3.5 },
+      { year: 2029, realGdpGrowth: 2.0, nominalGdp: 36380, inflationRate: 2.0, centralBankRate: 3.25, sovereignYield10Y: 3.90, sovereignYield2Y: 3.80, exchangeRate: 1.0, interestRateEffective: 3.5 },
+      { year: 2030, realGdpGrowth: 2.0, nominalGdp: 38020, inflationRate: 2.0, centralBankRate: 3.25, sovereignYield10Y: 3.90, sovereignYield2Y: 3.80, exchangeRate: 1.0, interestRateEffective: 3.5 },
+    ],
+    fiscalSeries: [
+      { year: 2022, oilRevenue: 0, directTaxRevenue: 3750, indirectTaxRevenue: 1150, taxRevenue: 4900, nonTaxRevenue: 196, totalRevenue: 5096, wagesAndSalaries: 1250, goodsAndServices: 1850, subsidiesAndTransfers: 2520, capitalExpenditure: 490, debtInterest: 475, totalExpenditure: 6585, primaryBalance: -1014, overallBalance: -1489, primaryBalancePercentGdp: -3.9, overallBalancePercentGdp: -5.8, nominalDebt: 30930, debtToGdp: 120.1, debtDomestic: 23200, debtExternal: 7730, debtAmortization: 2450, grossFinancingNeeds: 3939, gfnPercentGdp: 15.3 },
+      { year: 2023, oilRevenue: 0, directTaxRevenue: 3400, indirectTaxRevenue: 1040, taxRevenue: 4440, nonTaxRevenue: 210, totalRevenue: 4650, wagesAndSalaries: 1320, goodsAndServices: 1980, subsidiesAndTransfers: 2600, capitalExpenditure: 510, debtInterest: 659, totalExpenditure: 7069, primaryBalance: -1760, overallBalance: -2419, primaryBalancePercentGdp: -6.4, overallBalancePercentGdp: -8.8, nominalDebt: 33170, debtToGdp: 121.2, debtDomestic: 24800, debtExternal: 8370, debtAmortization: 2850, grossFinancingNeeds: 5269, gfnPercentGdp: 19.3 },
+      { year: 2024, oilRevenue: 0, directTaxRevenue: 3820, indirectTaxRevenue: 1100, taxRevenue: 4920, nonTaxRevenue: 220, totalRevenue: 5140, wagesAndSalaries: 1390, goodsAndServices: 2080, subsidiesAndTransfers: 2690, capitalExpenditure: 535, debtInterest: 882, totalExpenditure: 7577, primaryBalance: -1555, overallBalance: -2437, primaryBalancePercentGdp: -5.4, overallBalancePercentGdp: -8.4, nominalDebt: 35820, debtToGdp: 123.5, debtDomestic: 26800, debtExternal: 9020, debtAmortization: 3150, grossFinancingNeeds: 5587, gfnPercentGdp: 19.3 },
+      { year: 2025, oilRevenue: 0, directTaxRevenue: 4180, indirectTaxRevenue: 1160, taxRevenue: 5340, nonTaxRevenue: 240, totalRevenue: 5580, wagesAndSalaries: 1450, goodsAndServices: 2150, subsidiesAndTransfers: 2790, capitalExpenditure: 560, debtInterest: 960, totalExpenditure: 7910, primaryBalance: -1370, overallBalance: -2330, primaryBalancePercentGdp: -4.5, overallBalancePercentGdp: -7.6, nominalDebt: 38150, debtToGdp: 125.3, debtDomestic: 28600, debtExternal: 9550, debtAmortization: 3450, grossFinancingNeeds: 5780, gfnPercentGdp: 19.0 },
+      { year: 2026, oilRevenue: 0, directTaxRevenue: 4500, indirectTaxRevenue: 1220, taxRevenue: 5720, nonTaxRevenue: 250, totalRevenue: 5970, wagesAndSalaries: 1510, goodsAndServices: 2220, subsidiesAndTransfers: 2890, capitalExpenditure: 580, debtInterest: 1040, totalExpenditure: 8240, primaryBalance: -1230, overallBalance: -2270, primaryBalancePercentGdp: -3.9, overallBalancePercentGdp: -7.1, nominalDebt: 40420, debtToGdp: 127.0, debtDomestic: 30300, debtExternal: 10120, debtAmortization: 3720, grossFinancingNeeds: 5990, gfnPercentGdp: 18.8 },
+      { year: 2027, oilRevenue: 0, directTaxRevenue: 4810, indirectTaxRevenue: 1280, taxRevenue: 6090, nonTaxRevenue: 260, totalRevenue: 6350, wagesAndSalaries: 1570, goodsAndServices: 2290, subsidiesAndTransfers: 2990, capitalExpenditure: 600, debtInterest: 1110, totalExpenditure: 8560, primaryBalance: -1100, overallBalance: -2210, primaryBalancePercentGdp: -3.3, overallBalancePercentGdp: -6.6, nominalDebt: 42630, debtToGdp: 128.1, debtDomestic: 31970, debtExternal: 10660, debtAmortization: 3950, grossFinancingNeeds: 6160, gfnPercentGdp: 18.5 },
+      { year: 2028, oilRevenue: 0, directTaxRevenue: 5140, indirectTaxRevenue: 1340, taxRevenue: 6480, nonTaxRevenue: 270, totalRevenue: 6750, wagesAndSalaries: 1630, goodsAndServices: 2360, subsidiesAndTransfers: 3100, capitalExpenditure: 620, debtInterest: 1180, totalExpenditure: 8890, primaryBalance: -960, overallBalance: -2140, primaryBalancePercentGdp: -2.8, overallBalancePercentGdp: -6.1, nominalDebt: 44770, debtToGdp: 128.6, debtDomestic: 33570, debtExternal: 11200, debtAmortization: 4180, grossFinancingNeeds: 6320, gfnPercentGdp: 18.2 },
+      { year: 2029, oilRevenue: 0, directTaxRevenue: 5480, indirectTaxRevenue: 1400, taxRevenue: 6880, nonTaxRevenue: 280, totalRevenue: 7160, wagesAndSalaries: 1690, goodsAndServices: 2430, subsidiesAndTransfers: 3210, capitalExpenditure: 640, debtInterest: 1250, totalExpenditure: 9220, primaryBalance: -810, overallBalance: -2060, primaryBalancePercentGdp: -2.2, overallBalancePercentGdp: -5.7, nominalDebt: 46830, debtToGdp: 128.7, debtDomestic: 35120, debtExternal: 11710, debtAmortization: 4400, grossFinancingNeeds: 6460, gfnPercentGdp: 17.8 },
+      { year: 2030, oilRevenue: 0, directTaxRevenue: 5830, indirectTaxRevenue: 1460, taxRevenue: 7290, nonTaxRevenue: 293, totalRevenue: 7583, wagesAndSalaries: 1750, goodsAndServices: 2500, subsidiesAndTransfers: 3320, capitalExpenditure: 660, debtInterest: 1310, totalExpenditure: 9540, primaryBalance: -647, overallBalance: -1957, primaryBalancePercentGdp: -1.7, overallBalancePercentGdp: -5.1, nominalDebt: 48787, debtToGdp: 128.3, debtDomestic: 36590, debtExternal: 12197, debtAmortization: 4620, grossFinancingNeeds: 6577, gfnPercentGdp: 17.3 },
+    ],
+    debtTranches: [
+      { id: 'UST-10Y-2025', name: 'سندات الخزانة الأمريكية القياسية 10 سنوات (US 10-Yr Benchmark Note)', type: 'سندات حكومية قياسية (Benchmark Bonds)', currency: 'USD', couponRate: 4.15, issuanceYear: 2025, maturityYear: 2035, amount: 2500, rateType: 'ثابت (Fixed)' },
+      { id: 'UST-30Y-2024', name: 'سندات الخزانة الأمريكية طويلة الأجل 30 سنة (US Treasury 30-Yr Bond)', type: 'سندات حكومية قياسية (Benchmark Bonds)', currency: 'USD', couponRate: 4.38, issuanceYear: 2024, maturityYear: 2054, amount: 1800, rateType: 'ثابت (Fixed)' },
+      { id: 'UST-TIPS-2023', name: 'سندات خزانة محمية من التضخم (TIPS Inflation-Protected Note)', type: 'سندات حكومية قياسية (Benchmark Bonds)', currency: 'USD', couponRate: 1.85, issuanceYear: 2023, maturityYear: 2033, amount: 950, rateType: 'متغير (Floating)' },
+      { id: 'UST-TBILLS-2025', name: 'أذونات خزانة أمريكية قصيرة الأجل (US Treasury Bills 3-6M)', type: 'أذونات خزانة محلية (T-Bills)', currency: 'USD', couponRate: 4.75, issuanceYear: 2025, maturityYear: 2026, amount: 4800, rateType: 'ثابت (Fixed)' },
+    ],
+  },
+  {
+    id: 'KSA',
+    nameArabic: 'المملكة العربية السعودية',
+    nameEnglish: 'Saudi Arabia',
+    flagEmoji: '🇸🇦',
+    institutionNameArabic: 'وزارة المالية والمركز الوطني لإدارة الدين (NDMC)',
+    centralBankNameArabic: 'البنك المركزي السعودي (SAMA)',
+    centralBankRateLabel: 'معدل اتفاقيات إعادة الشراء (SAMA Repo Rate)',
+    centralBankRateValue: 5.50,
+    currencyCode: 'SAR',
+    currencyNameArabic: 'ريال سعودي (ر.س)',
+    exchangeRateToUSD: 3.75,
+    isHydrocarbonEconomy: true,
+    revenueLabel1: 'الإيرادات النفطية (عائدات تصدير الطاقة)',
+    revenueLabel2: 'الضرائب غير النفطية (ضريبة القيمة المضافة والدخل والجمارك)',
+    revenueLabel3: 'إيرادات الاستثمارات وصندوق الاستثمارات العامة والرسوم',
+    imfDataCitation: 'تقرير مشاورات المادة الرابعة لصندوق النقد الدولي (IMF Article IV) والبيان التمهيدي للميزانية العامة',
+    weoPublicationDate: 'تشرين الأول/أكتوبر 2024م (تقرير ختامي مدقق)',
+    historicalYearsLabel: '2022 - 2024م (الحسابات الختامية الفعلية الصادرة عن وزارة المالية)',
+    projectionYearsLabel: '2025 - 2030م (ميزانية الدولة المعتمدة وإطار التخطيط المالي MTFF)',
+    fiscalAnchorTarget: 35.0,
+    gfnThreshold: 10.0,
+    creditRatings: {
+      moodys: { rating: 'Aa3', outlook: 'إيجابي (Positive)' },
+      sp: { rating: 'A+', outlook: 'إيجابي (Positive)' },
+      fitch: { rating: 'A+', outlook: 'مستقر (Stable)' },
+    },
+    policyContext: 'اقتصاد يتمتع باحتياطيات مالية سيادية ضخمة ومستويات دين عام آمنة للغاية دون 28% من الناتج، مع إطار مالي منضبط يوجه الاقتراض حصرياً للمشاريع الرأسمالية والتحول الاقتصادي في إطار رؤية 2030.',
+    imfIndicators: OFFICIAL_IMF_INDICATOR_MAPPINGS,
+    macroSeries: [
+      { year: 2022, realGdpGrowth: 7.5, nominalGdp: 4156, inflationRate: 2.5, centralBankRate: 5.00, sovereignYield10Y: 4.10, sovereignYield2Y: 3.85, exchangeRate: 3.75, interestRateEffective: 3.2, oilPrice: 100.8, oilProduction: 10.6 },
+      { year: 2023, realGdpGrowth: -0.8, nominalGdp: 4003, inflationRate: 2.3, centralBankRate: 6.00, sovereignYield10Y: 4.75, sovereignYield2Y: 4.90, exchangeRate: 3.75, interestRateEffective: 3.8, oilPrice: 82.5, oilProduction: 9.6 },
+      { year: 2024, realGdpGrowth: 1.4, nominalGdp: 4120, inflationRate: 1.9, centralBankRate: 5.50, sovereignYield10Y: 4.85, sovereignYield2Y: 4.60, exchangeRate: 3.75, interestRateEffective: 4.1, oilPrice: 80.0, oilProduction: 9.0 },
+      { year: 2025, realGdpGrowth: 4.4, nominalGdp: 4380, inflationRate: 2.1, centralBankRate: 5.00, sovereignYield10Y: 4.65, sovereignYield2Y: 4.35, exchangeRate: 3.75, interestRateEffective: 4.1, oilPrice: 77.0, oilProduction: 9.5 },
+      { year: 2026, realGdpGrowth: 4.6, nominalGdp: 4650, inflationRate: 2.0, centralBankRate: 4.50, sovereignYield10Y: 4.45, sovereignYield2Y: 4.10, exchangeRate: 3.75, interestRateEffective: 4.2, oilPrice: 75.0, oilProduction: 9.8 },
+      { year: 2027, realGdpGrowth: 4.2, nominalGdp: 4920, inflationRate: 2.0, centralBankRate: 4.25, sovereignYield10Y: 4.35, sovereignYield2Y: 4.00, exchangeRate: 3.75, interestRateEffective: 4.2, oilPrice: 73.0, oilProduction: 10.0 },
+      { year: 2028, realGdpGrowth: 4.0, nominalGdp: 5190, inflationRate: 2.0, centralBankRate: 4.00, sovereignYield10Y: 4.25, sovereignYield2Y: 3.90, exchangeRate: 3.75, interestRateEffective: 4.1, oilPrice: 72.0, oilProduction: 10.2 },
+      { year: 2029, realGdpGrowth: 3.8, nominalGdp: 5460, inflationRate: 2.0, centralBankRate: 4.00, sovereignYield10Y: 4.25, sovereignYield2Y: 3.90, exchangeRate: 3.75, interestRateEffective: 4.0, oilPrice: 70.0, oilProduction: 10.3 },
+      { year: 2030, realGdpGrowth: 3.8, nominalGdp: 5740, inflationRate: 2.0, centralBankRate: 4.00, sovereignYield10Y: 4.25, sovereignYield2Y: 3.90, exchangeRate: 3.75, interestRateEffective: 4.0, oilPrice: 70.0, oilProduction: 10.4 },
+    ],
+    fiscalSeries: [
+      { year: 2022, oilRevenue: 857, directTaxRevenue: 857, indirectTaxRevenue: 322, taxRevenue: 322, nonTaxRevenue: 89, totalRevenue: 1268, wagesAndSalaries: 510, goodsAndServices: 245, subsidiesAndTransfers: 154, capitalExpenditure: 218, debtInterest: 37, totalExpenditure: 1164, primaryBalance: 141, overallBalance: 104, primaryBalancePercentGdp: 3.4, overallBalancePercentGdp: 2.5, nominalDebt: 990, debtToGdp: 23.8, debtDomestic: 615, debtExternal: 375, debtAmortization: 75, grossFinancingNeeds: 75, gfnPercentGdp: 1.8 },
+      { year: 2023, oilRevenue: 754, directTaxRevenue: 754, indirectTaxRevenue: 356, taxRevenue: 356, nonTaxRevenue: 102, totalRevenue: 1212, wagesAndSalaries: 535, goodsAndServices: 260, subsidiesAndTransfers: 175, capitalExpenditure: 265, debtInterest: 43, totalExpenditure: 1278, primaryBalance: -23, overallBalance: -66, primaryBalancePercentGdp: -0.6, overallBalancePercentGdp: -1.6, nominalDebt: 1050, debtToGdp: 26.2, debtDomestic: 644, debtExternal: 406, debtAmortization: 88, grossFinancingNeeds: 154, gfnPercentGdp: 3.8 },
+      { year: 2024, oilRevenue: 760, directTaxRevenue: 760, indirectTaxRevenue: 382, taxRevenue: 382, nonTaxRevenue: 108, totalRevenue: 1250, wagesAndSalaries: 550, goodsAndServices: 275, subsidiesAndTransfers: 185, capitalExpenditure: 295, debtInterest: 55, totalExpenditure: 1360, primaryBalance: -55, overallBalance: -110, primaryBalancePercentGdp: -1.3, overallBalancePercentGdp: -2.7, nominalDebt: 1180, debtToGdp: 28.6, debtDomestic: 710, debtExternal: 470, debtAmortization: 95, grossFinancingNeeds: 205, gfnPercentGdp: 5.0 },
+      { year: 2025, oilRevenue: 720, directTaxRevenue: 720, indirectTaxRevenue: 410, taxRevenue: 410, nonTaxRevenue: 120, totalRevenue: 1250, wagesAndSalaries: 565, goodsAndServices: 280, subsidiesAndTransfers: 190, capitalExpenditure: 300, debtInterest: 61, totalExpenditure: 1396, primaryBalance: -85, overallBalance: -146, primaryBalancePercentGdp: -1.9, overallBalancePercentGdp: -3.3, nominalDebt: 1300, debtToGdp: 29.7, debtDomestic: 780, debtExternal: 520, debtAmortization: 110, grossFinancingNeeds: 256, gfnPercentGdp: 5.8 },
+      { year: 2026, oilRevenue: 710, directTaxRevenue: 710, indirectTaxRevenue: 445, taxRevenue: 445, nonTaxRevenue: 135, totalRevenue: 1290, wagesAndSalaries: 580, goodsAndServices: 285, subsidiesAndTransfers: 195, capitalExpenditure: 290, debtInterest: 66, totalExpenditure: 1416, primaryBalance: -60, overallBalance: -126, primaryBalancePercentGdp: -1.3, overallBalancePercentGdp: -2.7, nominalDebt: 1395, debtToGdp: 30.0, debtDomestic: 835, debtExternal: 560, debtAmortization: 120, grossFinancingNeeds: 246, gfnPercentGdp: 5.3 },
+      { year: 2027, oilRevenue: 715, directTaxRevenue: 715, indirectTaxRevenue: 480, taxRevenue: 480, nonTaxRevenue: 145, totalRevenue: 1340, wagesAndSalaries: 595, goodsAndServices: 290, subsidiesAndTransfers: 200, capitalExpenditure: 280, debtInterest: 70, totalExpenditure: 1435, primaryBalance: -25, overallBalance: -95, primaryBalancePercentGdp: -0.5, overallBalancePercentGdp: -1.9, nominalDebt: 1465, debtToGdp: 29.8, debtDomestic: 875, debtExternal: 590, debtAmortization: 135, grossFinancingNeeds: 230, gfnPercentGdp: 4.7 },
+      { year: 2028, oilRevenue: 720, directTaxRevenue: 720, indirectTaxRevenue: 520, taxRevenue: 520, nonTaxRevenue: 155, totalRevenue: 1395, wagesAndSalaries: 610, goodsAndServices: 295, subsidiesAndTransfers: 205, capitalExpenditure: 275, debtInterest: 73, totalExpenditure: 1458, primaryBalance: 10, overallBalance: -63, primaryBalancePercentGdp: 0.2, overallBalancePercentGdp: -1.2, nominalDebt: 1510, debtToGdp: 29.1, debtDomestic: 905, debtExternal: 605, debtAmortization: 145, grossFinancingNeeds: 208, gfnPercentGdp: 4.0 },
+      { year: 2029, oilRevenue: 730, directTaxRevenue: 730, indirectTaxRevenue: 560, taxRevenue: 560, nonTaxRevenue: 165, totalRevenue: 1455, wagesAndSalaries: 625, goodsAndServices: 300, subsidiesAndTransfers: 210, capitalExpenditure: 270, debtInterest: 74, totalExpenditure: 1479, primaryBalance: 50, overallBalance: -24, primaryBalancePercentGdp: 0.9, overallBalancePercentGdp: -0.4, nominalDebt: 1525, debtToGdp: 27.9, debtDomestic: 915, debtExternal: 610, debtAmortization: 155, grossFinancingNeeds: 179, gfnPercentGdp: 3.3 },
+      { year: 2030, oilRevenue: 740, directTaxRevenue: 740, indirectTaxRevenue: 600, taxRevenue: 600, nonTaxRevenue: 175, totalRevenue: 1515, wagesAndSalaries: 640, goodsAndServices: 305, subsidiesAndTransfers: 215, capitalExpenditure: 265, debtInterest: 73, totalExpenditure: 1498, primaryBalance: 90, overallBalance: 17, primaryBalancePercentGdp: 1.6, overallBalancePercentGdp: 0.3, nominalDebt: 1515, debtToGdp: 26.4, debtDomestic: 910, debtExternal: 605, debtAmortization: 160, grossFinancingNeeds: 143, gfnPercentGdp: 2.5 },
+    ],
+    debtTranches: [
+      { id: 'SA-SUKUK-DOM-2025', name: 'صكوك حكومية محلية بالريال - سلسلة 2025-10', type: 'صكوك سيادية (Sukuk)', currency: 'SAR', couponRate: 4.75, issuanceYear: 2025, maturityYear: 2035, amount: 28.5, rateType: 'ثابت (Fixed)' },
+      { id: 'SA-INTL-SUKUK-USD', name: 'صكوك سيادية دولية بالدولار - شريحة 2029', type: 'صكوك سيادية (Sukuk)', currency: 'USD', couponRate: 4.62, issuanceYear: 2024, maturityYear: 2029, amount: 12.0, rateType: 'ثابت (Fixed)' },
+      { id: 'SA-GREEN-BOND-2024', name: 'سندات يوروبوند خضراء لدعم مشاريع الاستدامة والطاقة', type: 'سندات دولية (Eurobonds)', currency: 'USD', couponRate: 4.85, issuanceYear: 2024, maturityYear: 2034, amount: 7.5, rateType: 'ثابت (Fixed)' },
+      { id: 'SA-TBILLS-91D', name: 'أذونات خزانة حكومية محلية قصيرة الأجل (3 - 6 أشهر)', type: 'أذونات خزانة محلية (T-Bills)', currency: 'SAR', couponRate: 5.45, issuanceYear: 2025, maturityYear: 2025, amount: 45.0, rateType: 'متغير (Floating)' },
+    ],
+  },
+  {
+    id: 'GBR',
+    nameArabic: 'المملكة المتحدة (بريطانيا)',
+    nameEnglish: 'United Kingdom',
+    flagEmoji: '🇬🇧',
+    institutionNameArabic: 'خزانة جلالة الملك ومكتب إدارة الدين البريطاني (HM Treasury & UK DMO)',
+    centralBankNameArabic: 'بنك إنجلترا المركزي (Bank of England)',
+    centralBankRateLabel: 'سعر الفائدة المصرفي الرسمي (Official Bank Rate)',
+    centralBankRateValue: 4.75,
+    currencyCode: 'GBP',
+    currencyNameArabic: 'جنيه إسترليني (£)',
+    exchangeRateToUSD: 1.31,
+    isHydrocarbonEconomy: false,
+    revenueLabel1: 'ضرائب الدخل والأرباح والشركات (HMRC Income & Corp Tax)',
+    revenueLabel2: 'ضريبة القيمة المضافة والتأمين الوطني (VAT & National Insurance)',
+    revenueLabel3: 'إيرادات الرسوم والأصول الحكومية غير الضريبية',
+    imfDataCitation: 'قاعدة بيانات صندوق النقد الدولي (IMF WEO) ومكتب مسؤولية الميزانية (OBR)',
+    weoPublicationDate: 'تشرين الأول/أكتوبر 2024م (محدث بميزانية الخريف الرسمية)',
+    historicalYearsLabel: '2022 - 2024م (بيانات فعلية من مكتب الإحصاءات الوطنية ONS)',
+    projectionYearsLabel: '2025 - 2030م (توقعات مكتب مسؤولية الميزانية OBR وصندوق النقد)',
+    fiscalAnchorTarget: 80.0,
+    gfnThreshold: 15.0,
+    creditRatings: {
+      moodys: { rating: 'Aa3', outlook: 'مستقر (Stable)' },
+      sp: { rating: 'AA', outlook: 'مستقر (Stable)' },
+      fitch: { rating: 'AA-', outlook: 'مستقر (Stable)' },
+    },
+    policyContext: 'اقتصاد متقدم يطبق قواعد مالية دستورية ملزمة بإشراف مكتب مستقل لمسؤولية الميزانية (OBR)، مع التزام حكومي بخفض نسبة الدين العام للناتج بحلول عام 2029م.',
+    imfIndicators: OFFICIAL_IMF_INDICATOR_MAPPINGS,
+    macroSeries: [
+      { year: 2022, realGdpGrowth: 4.3, nominalGdp: 2520, inflationRate: 9.1, centralBankRate: 3.50, sovereignYield10Y: 3.65, sovereignYield2Y: 3.60, exchangeRate: 1.25, interestRateEffective: 3.2 },
+      { year: 2023, realGdpGrowth: 0.3, nominalGdp: 2680, inflationRate: 7.3, centralBankRate: 5.25, sovereignYield10Y: 4.10, sovereignYield2Y: 4.40, exchangeRate: 1.28, interestRateEffective: 3.8 },
+      { year: 2024, realGdpGrowth: 1.1, nominalGdp: 2810, inflationRate: 2.6, centralBankRate: 4.75, sovereignYield10Y: 4.20, sovereignYield2Y: 4.10, exchangeRate: 1.30, interestRateEffective: 4.0 },
+      { year: 2025, realGdpGrowth: 1.5, nominalGdp: 2940, inflationRate: 2.3, centralBankRate: 4.25, sovereignYield10Y: 4.05, sovereignYield2Y: 3.95, exchangeRate: 1.31, interestRateEffective: 4.1 },
+      { year: 2026, realGdpGrowth: 1.5, nominalGdp: 3070, inflationRate: 2.0, centralBankRate: 3.75, sovereignYield10Y: 3.90, sovereignYield2Y: 3.80, exchangeRate: 1.31, interestRateEffective: 4.0 },
+      { year: 2027, realGdpGrowth: 1.6, nominalGdp: 3200, inflationRate: 2.0, centralBankRate: 3.50, sovereignYield10Y: 3.80, sovereignYield2Y: 3.70, exchangeRate: 1.31, interestRateEffective: 3.9 },
+      { year: 2028, realGdpGrowth: 1.7, nominalGdp: 3340, inflationRate: 2.0, centralBankRate: 3.50, sovereignYield10Y: 3.75, sovereignYield2Y: 3.65, exchangeRate: 1.31, interestRateEffective: 3.8 },
+      { year: 2029, realGdpGrowth: 1.7, nominalGdp: 3480, inflationRate: 2.0, centralBankRate: 3.50, sovereignYield10Y: 3.70, sovereignYield2Y: 3.60, exchangeRate: 1.31, interestRateEffective: 3.7 },
+      { year: 2030, realGdpGrowth: 1.7, nominalGdp: 3630, inflationRate: 2.0, centralBankRate: 3.50, sovereignYield10Y: 3.70, sovereignYield2Y: 3.60, exchangeRate: 1.31, interestRateEffective: 3.7 },
+    ],
+    fiscalSeries: [
+      { year: 2022, oilRevenue: 0, directTaxRevenue: 580, indirectTaxRevenue: 310, taxRevenue: 890, nonTaxRevenue: 110, totalRevenue: 1000, wagesAndSalaries: 260, goodsAndServices: 340, subsidiesAndTransfers: 370, capitalExpenditure: 95, debtInterest: 82, totalExpenditure: 1147, primaryBalance: -65, overallBalance: -147, primaryBalancePercentGdp: -2.6, overallBalancePercentGdp: -5.8, nominalDebt: 2545, debtToGdp: 101.0, debtDomestic: 2290, debtExternal: 255, debtAmortization: 130, grossFinancingNeeds: 277, gfnPercentGdp: 11.0 },
+      { year: 2023, oilRevenue: 0, directTaxRevenue: 630, indirectTaxRevenue: 330, taxRevenue: 960, nonTaxRevenue: 115, totalRevenue: 1075, wagesAndSalaries: 280, goodsAndServices: 360, subsidiesAndTransfers: 395, capitalExpenditure: 100, debtInterest: 102, totalExpenditure: 1237, primaryBalance: -60, overallBalance: -162, primaryBalancePercentGdp: -2.2, overallBalancePercentGdp: -6.0, nominalDebt: 2710, debtToGdp: 101.1, debtDomestic: 2440, debtExternal: 270, debtAmortization: 145, grossFinancingNeeds: 307, gfnPercentGdp: 11.5 },
+      { year: 2024, oilRevenue: 0, directTaxRevenue: 675, indirectTaxRevenue: 345, taxRevenue: 1020, nonTaxRevenue: 120, totalRevenue: 1140, wagesAndSalaries: 295, goodsAndServices: 375, subsidiesAndTransfers: 415, capitalExpenditure: 108, debtInterest: 112, totalExpenditure: 1305, primaryBalance: -53, overallBalance: -165, primaryBalancePercentGdp: -1.9, overallBalancePercentGdp: -5.9, nominalDebt: 2855, debtToGdp: 101.6, debtDomestic: 2570, debtExternal: 285, debtAmortization: 160, grossFinancingNeeds: 325, gfnPercentGdp: 11.6 },
+      { year: 2025, oilRevenue: 0, directTaxRevenue: 725, indirectTaxRevenue: 365, taxRevenue: 1090, nonTaxRevenue: 128, totalRevenue: 1218, wagesAndSalaries: 310, goodsAndServices: 390, subsidiesAndTransfers: 430, capitalExpenditure: 115, debtInterest: 118, totalExpenditure: 1363, primaryBalance: -27, overallBalance: -145, primaryBalancePercentGdp: -0.9, overallBalancePercentGdp: -4.9, nominalDebt: 2980, debtToGdp: 101.4, debtDomestic: 2680, debtExternal: 300, debtAmortization: 175, grossFinancingNeeds: 320, gfnPercentGdp: 10.9 },
+      { year: 2026, oilRevenue: 0, directTaxRevenue: 775, indirectTaxRevenue: 385, taxRevenue: 1160, nonTaxRevenue: 134, totalRevenue: 1294, wagesAndSalaries: 325, goodsAndServices: 405, subsidiesAndTransfers: 445, capitalExpenditure: 120, debtInterest: 122, totalExpenditure: 1417, primaryBalance: -1, overallBalance: -123, primaryBalancePercentGdp: 0.0, overallBalancePercentGdp: -4.0, nominalDebt: 3090, debtToGdp: 100.7, debtDomestic: 2780, debtExternal: 310, debtAmortization: 190, grossFinancingNeeds: 313, gfnPercentGdp: 10.2 },
+      { year: 2027, oilRevenue: 0, directTaxRevenue: 825, indirectTaxRevenue: 405, taxRevenue: 1230, nonTaxRevenue: 140, totalRevenue: 1370, wagesAndSalaries: 340, goodsAndServices: 420, subsidiesAndTransfers: 460, capitalExpenditure: 125, debtInterest: 124, totalExpenditure: 1469, primaryBalance: 25, overallBalance: -99, primaryBalancePercentGdp: 0.8, overallBalancePercentGdp: -3.1, nominalDebt: 3180, debtToGdp: 99.4, debtDomestic: 2860, debtExternal: 320, debtAmortization: 205, grossFinancingNeeds: 304, gfnPercentGdp: 9.5 },
+      { year: 2028, oilRevenue: 0, directTaxRevenue: 875, indirectTaxRevenue: 425, taxRevenue: 1300, nonTaxRevenue: 148, totalRevenue: 1448, wagesAndSalaries: 355, goodsAndServices: 435, subsidiesAndTransfers: 475, capitalExpenditure: 130, debtInterest: 126, totalExpenditure: 1521, primaryBalance: 53, overallBalance: -73, primaryBalancePercentGdp: 1.6, overallBalancePercentGdp: -2.2, nominalDebt: 3245, debtToGdp: 97.2, debtDomestic: 2920, debtExternal: 325, debtAmortization: 220, grossFinancingNeeds: 293, gfnPercentGdp: 8.8 },
+      { year: 2029, oilRevenue: 0, directTaxRevenue: 930, indirectTaxRevenue: 445, taxRevenue: 1375, nonTaxRevenue: 155, totalRevenue: 1530, wagesAndSalaries: 370, goodsAndServices: 450, subsidiesAndTransfers: 490, capitalExpenditure: 135, debtInterest: 128, totalExpenditure: 1573, primaryBalance: 85, overallBalance: -43, primaryBalancePercentGdp: 2.4, overallBalancePercentGdp: -1.2, nominalDebt: 3280, debtToGdp: 94.3, debtDomestic: 2950, debtExternal: 330, debtAmortization: 235, grossFinancingNeeds: 278, gfnPercentGdp: 8.0 },
+      { year: 2030, oilRevenue: 0, directTaxRevenue: 985, indirectTaxRevenue: 465, taxRevenue: 1450, nonTaxRevenue: 162, totalRevenue: 1612, wagesAndSalaries: 385, goodsAndServices: 465, subsidiesAndTransfers: 505, capitalExpenditure: 140, debtInterest: 129, totalExpenditure: 1624, primaryBalance: 117, overallBalance: -12, primaryBalancePercentGdp: 3.2, overallBalancePercentGdp: -0.3, nominalDebt: 3290, debtToGdp: 90.6, debtDomestic: 2960, debtExternal: 330, debtAmortization: 250, grossFinancingNeeds: 262, gfnPercentGdp: 7.2 },
+    ],
+    debtTranches: [
+      { id: 'UK-GILT-10Y', name: 'سندات الجيلت البريطانية التقليدية 10 سنوات (UK Benchmark Gilt)', type: 'سندات جيلت سيادية (Gilts)', currency: 'GBP', couponRate: 4.25, issuanceYear: 2024, maturityYear: 2034, amount: 280, rateType: 'ثابت (Fixed)' },
+      { id: 'UK-INDEX-GILT', name: 'سندات جيلت مرتبطة بمؤشر التضخم (Index-Linked Gilt)', type: 'سندات جيلت سيادية (Gilts)', currency: 'GBP', couponRate: 1.25, issuanceYear: 2022, maturityYear: 2042, amount: 165, rateType: 'متغير (Floating)' },
+      { id: 'UK-GREEN-GILT', name: 'سندات جيلت السيادية الخضراء لدعم مشاريع الاستدامة (UK Green Gilt)', type: 'سندات جيلت سيادية (Gilts)', currency: 'GBP', couponRate: 3.75, issuanceYear: 2023, maturityYear: 2033, amount: 95, rateType: 'ثابت (Fixed)' },
+      { id: 'UK-TBILLS-2025', name: 'أذونات خزانة بريطانية قصيرة الأجل (UK Treasury Bills 3-6M)', type: 'أذونات خزانة محلية (T-Bills)', currency: 'GBP', couponRate: 4.80, issuanceYear: 2025, maturityYear: 2026, amount: 180, rateType: 'ثابت (Fixed)' },
+    ],
+  },
+  {
+    id: 'DEU',
+    nameArabic: 'جمهورية ألمانيا الاتحادية',
+    nameEnglish: 'Germany',
+    flagEmoji: '🇩🇪',
+    institutionNameArabic: 'وزارة المالية الاتحادية الألمانية (Bundesministerium der Finanzen - BMF)',
+    centralBankNameArabic: 'البنك المركزي الأوروبي (European Central Bank - ECB)',
+    centralBankRateLabel: 'سعر الفائدة على إعادة التمويل الرئيسي (ECB Main Refinancing Rate)',
+    centralBankRateValue: 3.25,
+    currencyCode: 'EUR',
+    currencyNameArabic: 'يورو (€)',
+    exchangeRateToUSD: 1.12,
+    isHydrocarbonEconomy: false,
+    revenueLabel1: 'ضرائب الدخل والشركات الفيدرالية المباشرة (Einkommen- & Körperschaftsteuer)',
+    revenueLabel2: 'ضريبة القيمة المضافة الفيدرالية (Umsatzsteuer / VAT)',
+    revenueLabel3: 'إيرادات الرسوم والخدمات والجمارك غير الضريبية',
+    imfDataCitation: 'قاعدة بيانات صندوق النقد الدولي (IMF WEO) ووزارة المالية الفيدرالية الألمانية (BMF / Bundesbank)',
+    weoPublicationDate: 'تشرين الأول/أكتوبر 2024م (الخطة المالية الخمسية الفيدرالية)',
+    historicalYearsLabel: '2022 - 2024م (حسابات ختامية مدققة رسمياً من Destatis)',
+    projectionYearsLabel: '2025 - 2030م (الخطة المالية الفيدرالية المعتمدة وصندوق النقد)',
+    fiscalAnchorTarget: 60.0, // Maastricht
+    gfnThreshold: 12.0,
+    creditRatings: {
+      moodys: { rating: 'Aaa', outlook: 'مستقر (Stable)' },
+      sp: { rating: 'AAA', outlook: 'مستقر (Stable)' },
+      fitch: { rating: 'AAA', outlook: 'مستقر (Stable)' },
+    },
+    policyContext: 'أكبر اقتصاد أوروبي، يُطبق قاعدة كبح الديون الدستورية الصارمة (Schuldenbremse)، مع مساحة مالية صلبة ونسبة دين عام مستقرة حول 63% وتصنيف ائتماني ممتاز AAA.',
+    imfIndicators: OFFICIAL_IMF_INDICATOR_MAPPINGS,
+    macroSeries: [
+      { year: 2022, realGdpGrowth: 1.8, nominalGdp: 3870, inflationRate: 8.7, centralBankRate: 2.50, sovereignYield10Y: 2.15, sovereignYield2Y: 2.05, exchangeRate: 1.05, interestRateEffective: 1.5 },
+      { year: 2023, realGdpGrowth: -0.3, nominalGdp: 4120, inflationRate: 6.0, centralBankRate: 4.50, sovereignYield10Y: 2.45, sovereignYield2Y: 2.60, exchangeRate: 1.08, interestRateEffective: 1.9 },
+      { year: 2024, realGdpGrowth: 0.0, nominalGdp: 4250, inflationRate: 2.4, centralBankRate: 3.25, sovereignYield10Y: 2.30, sovereignYield2Y: 2.20, exchangeRate: 1.10, interestRateEffective: 2.2 },
+      { year: 2025, realGdpGrowth: 0.8, nominalGdp: 4390, inflationRate: 2.1, centralBankRate: 2.75, sovereignYield10Y: 2.25, sovereignYield2Y: 2.15, exchangeRate: 1.12, interestRateEffective: 2.3 },
+      { year: 2026, realGdpGrowth: 1.3, nominalGdp: 4550, inflationRate: 2.0, centralBankRate: 2.50, sovereignYield10Y: 2.20, sovereignYield2Y: 2.10, exchangeRate: 1.12, interestRateEffective: 2.4 },
+      { year: 2027, realGdpGrowth: 1.4, nominalGdp: 4720, inflationRate: 2.0, centralBankRate: 2.50, sovereignYield10Y: 2.15, sovereignYield2Y: 2.05, exchangeRate: 1.12, interestRateEffective: 2.4 },
+      { year: 2028, realGdpGrowth: 1.3, nominalGdp: 4890, inflationRate: 2.0, centralBankRate: 2.50, sovereignYield10Y: 2.15, sovereignYield2Y: 2.05, exchangeRate: 1.12, interestRateEffective: 2.4 },
+      { year: 2029, realGdpGrowth: 1.2, nominalGdp: 5060, inflationRate: 2.0, centralBankRate: 2.50, sovereignYield10Y: 2.15, sovereignYield2Y: 2.05, exchangeRate: 1.12, interestRateEffective: 2.4 },
+      { year: 2030, realGdpGrowth: 1.2, nominalGdp: 5230, inflationRate: 2.0, centralBankRate: 2.50, sovereignYield10Y: 2.15, sovereignYield2Y: 2.05, exchangeRate: 1.12, interestRateEffective: 2.4 },
+    ],
+    fiscalSeries: [
+      { year: 2022, oilRevenue: 0, directTaxRevenue: 1180, indirectTaxRevenue: 630, taxRevenue: 1810, nonTaxRevenue: 120, totalRevenue: 1930, wagesAndSalaries: 330, goodsAndServices: 490, subsidiesAndTransfers: 990, capitalExpenditure: 110, debtInterest: 38, totalExpenditure: 2028, primaryBalance: -60, overallBalance: -98, primaryBalancePercentGdp: -1.6, overallBalancePercentGdp: -2.5, nominalDebt: 2560, debtToGdp: 66.1, debtDomestic: 2200, debtExternal: 360, debtAmortization: 240, grossFinancingNeeds: 338, gfnPercentGdp: 8.7 },
+      { year: 2023, oilRevenue: 0, directTaxRevenue: 1245, indirectTaxRevenue: 665, taxRevenue: 1910, nonTaxRevenue: 127, totalRevenue: 2037, wagesAndSalaries: 350, goodsAndServices: 520, subsidiesAndTransfers: 1060, capitalExpenditure: 118, debtInterest: 49, totalExpenditure: 2147, primaryBalance: -61, overallBalance: -110, primaryBalancePercentGdp: -1.5, overallBalancePercentGdp: -2.7, nominalDebt: 2620, debtToGdp: 63.6, debtDomestic: 2250, debtExternal: 370, debtAmortization: 260, grossFinancingNeeds: 370, gfnPercentGdp: 9.0 },
+      { year: 2024, oilRevenue: 0, directTaxRevenue: 1290, indirectTaxRevenue: 690, taxRevenue: 1980, nonTaxRevenue: 132, totalRevenue: 2112, wagesAndSalaries: 365, goodsAndServices: 535, subsidiesAndTransfers: 1090, capitalExpenditure: 122, debtInterest: 56, totalExpenditure: 2218, primaryBalance: -50, overallBalance: -106, primaryBalancePercentGdp: -1.2, overallBalancePercentGdp: -2.5, nominalDebt: 2690, debtToGdp: 63.3, debtDomestic: 2310, debtExternal: 380, debtAmortization: 275, grossFinancingNeeds: 381, gfnPercentGdp: 9.0 },
+      { year: 2025, oilRevenue: 0, directTaxRevenue: 1345, indirectTaxRevenue: 715, taxRevenue: 2060, nonTaxRevenue: 137, totalRevenue: 2197, wagesAndSalaries: 380, goodsAndServices: 550, subsidiesAndTransfers: 1120, capitalExpenditure: 128, debtInterest: 61, totalExpenditure: 2289, primaryBalance: -31, overallBalance: -92, primaryBalancePercentGdp: -0.7, overallBalancePercentGdp: -2.1, nominalDebt: 2760, debtToGdp: 62.9, debtDomestic: 2370, debtExternal: 390, debtAmortization: 285, grossFinancingNeeds: 377, gfnPercentGdp: 8.6 },
+      { year: 2026, oilRevenue: 0, directTaxRevenue: 1405, indirectTaxRevenue: 745, taxRevenue: 2150, nonTaxRevenue: 142, totalRevenue: 2292, wagesAndSalaries: 395, goodsAndServices: 565, subsidiesAndTransfers: 1150, capitalExpenditure: 135, debtInterest: 64, totalExpenditure: 2359, primaryBalance: -3, overallBalance: -67, primaryBalancePercentGdp: -0.1, overallBalancePercentGdp: -1.5, nominalDebt: 2815, debtToGdp: 61.9, debtDomestic: 2420, debtExternal: 395, debtAmortization: 295, grossFinancingNeeds: 362, gfnPercentGdp: 8.0 },
+      { year: 2027, oilRevenue: 0, directTaxRevenue: 1470, indirectTaxRevenue: 780, taxRevenue: 2250, nonTaxRevenue: 147, totalRevenue: 2397, wagesAndSalaries: 410, goodsAndServices: 580, subsidiesAndTransfers: 1180, capitalExpenditure: 140, debtInterest: 66, totalExpenditure: 2436, primaryBalance: 27, overallBalance: -39, primaryBalancePercentGdp: 0.6, overallBalancePercentGdp: -0.8, nominalDebt: 2845, debtToGdp: 60.3, debtDomestic: 2450, debtExternal: 395, debtAmortization: 300, grossFinancingNeeds: 339, gfnPercentGdp: 7.2 },
+      { year: 2028, oilRevenue: 0, directTaxRevenue: 1535, indirectTaxRevenue: 815, taxRevenue: 2350, nonTaxRevenue: 154, totalRevenue: 2504, wagesAndSalaries: 425, goodsAndServices: 595, subsidiesAndTransfers: 1210, capitalExpenditure: 145, debtInterest: 67, totalExpenditure: 2502, primaryBalance: 69, overallBalance: 2, primaryBalancePercentGdp: 1.4, overallBalancePercentGdp: 0.0, nominalDebt: 2840, debtToGdp: 58.1, debtDomestic: 2445, debtExternal: 395, debtAmortization: 305, grossFinancingNeeds: 305, gfnPercentGdp: 6.2 },
+      { year: 2029, oilRevenue: 0, directTaxRevenue: 1600, indirectTaxRevenue: 850, taxRevenue: 2450, nonTaxRevenue: 160, totalRevenue: 2610, wagesAndSalaries: 440, goodsAndServices: 610, subsidiesAndTransfers: 1240, capitalExpenditure: 150, debtInterest: 67, totalExpenditure: 2567, primaryBalance: 110, overallBalance: 43, primaryBalancePercentGdp: 2.2, overallBalancePercentGdp: 0.9, nominalDebt: 2800, debtToGdp: 55.3, debtDomestic: 2410, debtExternal: 390, debtAmortization: 310, grossFinancingNeeds: 267, gfnPercentGdp: 5.3 },
+      { year: 2030, oilRevenue: 0, directTaxRevenue: 1665, indirectTaxRevenue: 885, taxRevenue: 2550, nonTaxRevenue: 167, totalRevenue: 2717, wagesAndSalaries: 455, goodsAndServices: 625, subsidiesAndTransfers: 1270, capitalExpenditure: 155, debtInterest: 66, totalExpenditure: 2631, primaryBalance: 152, overallBalance: 86, primaryBalancePercentGdp: 2.9, overallBalancePercentGdp: 1.6, nominalDebt: 2720, debtToGdp: 52.0, debtDomestic: 2340, debtExternal: 380, debtAmortization: 315, grossFinancingNeeds: 229, gfnPercentGdp: 4.4 },
+    ],
+    debtTranches: [
+      { id: 'DE-BUND-10Y', name: 'سندات البوند الألمانية الفيدرالية 10 سنوات (Federal Bund 10-Yr Benchmark)', type: 'سندات فيدرالية (Bunds/Bobl)', currency: 'EUR', couponRate: 2.25, issuanceYear: 2025, maturityYear: 2035, amount: 480, rateType: 'ثابت (Fixed)' },
+      { id: 'DE-BOBL-5Y', name: 'سندات بوبل الفيدرالية متوسطة الأجل 5 سنوات (Federal Bobl)', type: 'سندات فيدرالية (Bunds/Bobl)', currency: 'EUR', couponRate: 2.10, issuanceYear: 2024, maturityYear: 2029, amount: 320, rateType: 'ثابت (Fixed)' },
+      { id: 'DE-SCHATZ-2Y', name: 'أذونات شاتز الفيدرالية قصيرة الأجل سنتين (Federal Schatz)', type: 'أذونات خزانة محلية (T-Bills)', currency: 'EUR', couponRate: 2.35, issuanceYear: 2025, maturityYear: 2027, amount: 250, rateType: 'ثابت (Fixed)' },
+    ],
+  },
+  {
+    id: 'EGY',
+    nameArabic: 'جمهورية مصر العربية',
+    nameEnglish: 'Egypt',
+    flagEmoji: '🇪🇬',
+    institutionNameArabic: 'وزارة المالية المصرية ووحدة إدارة الدين العام',
+    centralBankNameArabic: 'البنك المركزي المصري (Central Bank of Egypt - CBE)',
+    centralBankRateLabel: 'سعر الفائدة على الإيداع لليلة واحدة (CBE Overnight Deposit)',
+    centralBankRateValue: 27.25,
+    currencyCode: 'EGP',
+    currencyNameArabic: 'جنيه مصري (EGP)',
+    exchangeRateToUSD: 48.5,
+    isHydrocarbonEconomy: false,
+    revenueLabel1: 'ضرائب الدخل والأرباح التجارية والشركات المباشرة',
+    revenueLabel2: 'ضريبة القيمة المضافة والجمارك والدمغة غير المباشرة',
+    revenueLabel3: 'فوائض الهيئات الاقتصادية وقناة السويس والأرباح غير الضريبية',
+    imfDataCitation: 'مراجعات برنامج تسهيل الصندوق الممدد (IMF EFF Review) وإطار المالية العامة لوزارة المالية المصرية',
+    weoPublicationDate: 'تشرين الأول/أكتوبر 2024م (محدث باتفاق المراجعة الثالثة والرابعة)',
+    historicalYearsLabel: '2022 - 2024م (الحسابات الختامية لموازنة الدولة الصادرة عن وزارة المالية)',
+    projectionYearsLabel: '2025 - 2030م (إطار الموازنة متوسط الأجل المتفق عليه مع صندوق النقد)',
+    fiscalAnchorTarget: 80.0,
+    gfnThreshold: 25.0,
+    creditRatings: {
+      moodys: { rating: 'Caa1', outlook: 'إيجابي (Positive)' },
+      sp: { rating: 'B-', outlook: 'إيجابي (Positive)' },
+      fitch: { rating: 'B-', outlook: 'إيجابي (Positive)' },
+    },
+    policyContext: 'اقتصاد يمر بإصلاح مالي شامل يستهدف تحقيق فوائض أولية قياسية تفوق 2.5% إلى 3.5% سنوياً لخفض نسبة الدين العام إلى الناتج من 95% نحو مستويات ما دون 75% بحلول عام 2028م.',
+    imfIndicators: OFFICIAL_IMF_INDICATOR_MAPPINGS,
+    macroSeries: [
+      { year: 2022, realGdpGrowth: 6.6, nominalGdp: 7840, inflationRate: 13.9, centralBankRate: 16.25, sovereignYield10Y: 14.5, sovereignYield2Y: 15.5, exchangeRate: 19.5, interestRateEffective: 10.2 },
+      { year: 2023, realGdpGrowth: 3.8, nominalGdp: 9980, inflationRate: 34.0, centralBankRate: 19.25, sovereignYield10Y: 22.0, sovereignYield2Y: 24.0, exchangeRate: 30.9, interestRateEffective: 13.5 },
+      { year: 2024, realGdpGrowth: 2.7, nominalGdp: 13200, inflationRate: 27.5, centralBankRate: 27.25, sovereignYield10Y: 24.5, sovereignYield2Y: 25.5, exchangeRate: 48.2, interestRateEffective: 16.8 },
+      { year: 2025, realGdpGrowth: 4.1, nominalGdp: 16800, inflationRate: 16.5, centralBankRate: 22.00, sovereignYield10Y: 20.5, sovereignYield2Y: 21.5, exchangeRate: 48.5, interestRateEffective: 15.2 },
+      { year: 2026, realGdpGrowth: 4.8, nominalGdp: 19600, inflationRate: 11.2, centralBankRate: 16.00, sovereignYield10Y: 16.5, sovereignYield2Y: 17.0, exchangeRate: 49.0, interestRateEffective: 13.0 },
+      { year: 2027, realGdpGrowth: 5.2, nominalGdp: 22500, inflationRate: 8.5, centralBankRate: 13.00, sovereignYield10Y: 14.0, sovereignYield2Y: 14.5, exchangeRate: 49.5, interestRateEffective: 11.5 },
+      { year: 2028, realGdpGrowth: 5.5, nominalGdp: 25400, inflationRate: 7.2, centralBankRate: 11.00, sovereignYield10Y: 12.5, sovereignYield2Y: 13.0, exchangeRate: 50.0, interestRateEffective: 10.2 },
+      { year: 2029, realGdpGrowth: 5.5, nominalGdp: 28500, inflationRate: 6.8, centralBankRate: 10.00, sovereignYield10Y: 11.5, sovereignYield2Y: 12.0, exchangeRate: 50.0, interestRateEffective: 9.5 },
+      { year: 2030, realGdpGrowth: 5.6, nominalGdp: 31800, inflationRate: 6.5, centralBankRate: 9.50, sovereignYield10Y: 11.0, sovereignYield2Y: 11.5, exchangeRate: 50.0, interestRateEffective: 9.0 },
+    ],
+    fiscalSeries: [
+      { year: 2022, oilRevenue: 0, directTaxRevenue: 510, indirectTaxRevenue: 480, taxRevenue: 990, nonTaxRevenue: 355, totalRevenue: 1345, wagesAndSalaries: 380, goodsAndServices: 110, subsidiesAndTransfers: 310, capitalExpenditure: 320, debtInterest: 585, totalExpenditure: 1705, primaryBalance: 225, overallBalance: -360, primaryBalancePercentGdp: 2.9, overallBalancePercentGdp: -4.6, nominalDebt: 6980, debtToGdp: 89.0, debtDomestic: 4890, debtExternal: 2090, debtAmortization: 1250, grossFinancingNeeds: 1610, gfnPercentGdp: 20.5 },
+      { year: 2023, oilRevenue: 0, directTaxRevenue: 590, indirectTaxRevenue: 570, taxRevenue: 1160, nonTaxRevenue: 430, totalRevenue: 1590, wagesAndSalaries: 420, goodsAndServices: 140, subsidiesAndTransfers: 390, capitalExpenditure: 360, debtInterest: 860, totalExpenditure: 2170, primaryBalance: 280, overallBalance: -580, primaryBalancePercentGdp: 2.8, overallBalancePercentGdp: -5.8, nominalDebt: 9550, debtToGdp: 95.7, debtDomestic: 6490, debtExternal: 3060, debtAmortization: 1980, grossFinancingNeeds: 2560, gfnPercentGdp: 25.7 },
+      { year: 2024, oilRevenue: 0, directTaxRevenue: 850, indirectTaxRevenue: 780, taxRevenue: 1630, nonTaxRevenue: 510, totalRevenue: 2140, wagesAndSalaries: 530, goodsAndServices: 180, subsidiesAndTransfers: 520, capitalExpenditure: 420, debtInterest: 1420, totalExpenditure: 3070, primaryBalance: 490, overallBalance: -930, primaryBalancePercentGdp: 3.7, overallBalancePercentGdp: -7.0, nominalDebt: 11800, debtToGdp: 89.4, debtDomestic: 7670, debtExternal: 4130, debtAmortization: 2850, grossFinancingNeeds: 3780, gfnPercentGdp: 28.6 },
+      { year: 2025, oilRevenue: 0, directTaxRevenue: 1100, indirectTaxRevenue: 980, taxRevenue: 2080, nonTaxRevenue: 620, totalRevenue: 2700, wagesAndSalaries: 610, goodsAndServices: 220, subsidiesAndTransfers: 580, capitalExpenditure: 480, debtInterest: 1780, totalExpenditure: 3670, primaryBalance: 810, overallBalance: -970, primaryBalancePercentGdp: 4.8, overallBalancePercentGdp: -5.8, nominalDebt: 14200, debtToGdp: 84.5, debtDomestic: 9090, debtExternal: 5110, debtAmortization: 3200, grossFinancingNeeds: 4170, gfnPercentGdp: 24.8 },
+      { year: 2026, oilRevenue: 0, directTaxRevenue: 1340, indirectTaxRevenue: 1180, taxRevenue: 2520, nonTaxRevenue: 720, totalRevenue: 3240, wagesAndSalaries: 690, goodsAndServices: 260, subsidiesAndTransfers: 630, capitalExpenditure: 550, debtInterest: 1950, totalExpenditure: 4080, primaryBalance: 1110, overallBalance: -840, primaryBalancePercentGdp: 5.7, overallBalancePercentGdp: -4.3, nominalDebt: 15800, debtToGdp: 80.6, debtDomestic: 10110, debtExternal: 5690, debtAmortization: 3500, grossFinancingNeeds: 4340, gfnPercentGdp: 22.1 },
+      { year: 2027, oilRevenue: 0, directTaxRevenue: 1590, indirectTaxRevenue: 1390, taxRevenue: 2980, nonTaxRevenue: 820, totalRevenue: 3800, wagesAndSalaries: 780, goodsAndServices: 300, subsidiesAndTransfers: 680, capitalExpenditure: 620, debtInterest: 2050, totalExpenditure: 4430, primaryBalance: 1420, overallBalance: -630, primaryBalancePercentGdp: 6.3, overallBalancePercentGdp: -2.8, nominalDebt: 17200, debtToGdp: 76.4, debtDomestic: 11010, debtExternal: 6190, debtAmortization: 3750, grossFinancingNeeds: 4380, gfnPercentGdp: 19.5 },
+      { year: 2028, oilRevenue: 0, directTaxRevenue: 1850, indirectTaxRevenue: 1600, taxRevenue: 3450, nonTaxRevenue: 920, totalRevenue: 4370, wagesAndSalaries: 870, goodsAndServices: 340, subsidiesAndTransfers: 730, capitalExpenditure: 700, debtInterest: 2100, totalExpenditure: 4740, primaryBalance: 1730, overallBalance: -370, primaryBalancePercentGdp: 6.8, overallBalancePercentGdp: -1.5, nominalDebt: 18400, debtToGdp: 72.4, debtDomestic: 11780, debtExternal: 6620, debtAmortization: 3950, grossFinancingNeeds: 4320, gfnPercentGdp: 17.0 },
+      { year: 2029, oilRevenue: 0, directTaxRevenue: 2120, indirectTaxRevenue: 1830, taxRevenue: 3950, nonTaxRevenue: 1020, totalRevenue: 4970, wagesAndSalaries: 960, goodsAndServices: 380, subsidiesAndTransfers: 780, capitalExpenditure: 780, debtInterest: 2150, totalExpenditure: 5050, primaryBalance: 2070, overallBalance: -80, primaryBalancePercentGdp: 7.3, overallBalancePercentGdp: -0.3, nominalDebt: 19400, debtToGdp: 68.1, debtDomestic: 12420, debtExternal: 6980, debtAmortization: 4100, grossFinancingNeeds: 4180, gfnPercentGdp: 14.7 },
+      { year: 2030, oilRevenue: 0, directTaxRevenue: 2410, indirectTaxRevenue: 2070, taxRevenue: 4480, nonTaxRevenue: 1130, totalRevenue: 5610, wagesAndSalaries: 1050, goodsAndServices: 420, subsidiesAndTransfers: 830, capitalExpenditure: 860, debtInterest: 2180, totalExpenditure: 5340, primaryBalance: 2450, overallBalance: 270, primaryBalancePercentGdp: 7.7, overallBalancePercentGdp: 0.8, nominalDebt: 20100, debtToGdp: 63.2, debtDomestic: 12860, debtExternal: 7240, debtAmortization: 4200, grossFinancingNeeds: 3930, gfnPercentGdp: 12.4 },
+    ],
+    debtTranches: [
+      { id: 'EG-EURO-USD', name: 'سندات يوروبوند دولية مقومة بالدولار (Egypt 2027 Benchmark Eurobond)', type: 'سندات دولية (Eurobonds)', currency: 'USD', couponRate: 7.50, issuanceYear: 2017, maturityYear: 2027, amount: 1500, rateType: 'ثابت (Fixed)' },
+      { id: 'EG-SUKUK-2023', name: 'صكوك سيادية إسلامية دولية مقومة بالدولار (Sovereign Sukuk)', type: 'صكوك سيادية (Sukuk)', currency: 'USD', couponRate: 10.87, issuanceYear: 2023, maturityYear: 2026, amount: 1500, rateType: 'ثابت (Fixed)' },
+      { id: 'EG-TBILLS-EGP', name: 'أذونات خزانة محلية بالجنيه المصري (91 و 182 و 364 يوم)', type: 'أذونات خزانة محلية (T-Bills)', currency: 'EGP', couponRate: 26.50, issuanceYear: 2024, maturityYear: 2025, amount: 850, rateType: 'متغير (Floating)' },
+      { id: 'EG-PANDA-SAMURAI', name: 'سندات الباندا والساموراي المستدامة (Panda & Samurai Bonds)', type: 'سندات دولية (Eurobonds)', currency: 'USD', couponRate: 3.50, issuanceYear: 2023, maturityYear: 2028, amount: 1000, rateType: 'ثابت (Fixed)' },
+    ],
+  },
+  {
+    id: 'JPN',
+    nameArabic: 'اليابان',
+    nameEnglish: 'Japan',
+    flagEmoji: '🇯🇵',
+    institutionNameArabic: 'وزارة المالية اليابانية (Ministry of Finance Japan - 財務省)',
+    centralBankNameArabic: 'بنك اليابان المركزي (Bank of Japan - 日本銀行)',
+    centralBankRateLabel: 'سعر الفائدة الموجه للبنك المركزي (BOJ Policy Rate)',
+    centralBankRateValue: 0.25,
+    currencyCode: 'JPY',
+    currencyNameArabic: 'ين ياباني (¥ - تريليون)',
+    exchangeRateToUSD: 146.5,
+    isHydrocarbonEconomy: false,
+    revenueLabel1: 'ضرائب الدخل والأرباح والشركات المباشرة',
+    revenueLabel2: 'ضريبة الاستهلاك والمبيعات غير المباشرة (Consumption Tax 10%)',
+    revenueLabel3: 'إيرادات الحسابات الخاصة ورسوم الخدمات غير الضريبية',
+    imfDataCitation: 'قاعدة بيانات صندوق النقد الدولي (IMF WEO) ووزارة المالية اليابانية (MOF)',
+    weoPublicationDate: 'تشرين الأول/أكتوبر 2024م (محدث ببيانات بنك اليابان BOJ)',
+    historicalYearsLabel: '2022 - 2024م (بيانات الميزانية الختامية من مكتب مجلس الوزراء)',
+    projectionYearsLabel: '2025 - 2030م (إطار الإصلاح المالي متوسط الأجل وصندوق النقد)',
+    fiscalAnchorTarget: 220.0,
+    gfnThreshold: 35.0,
+    creditRatings: {
+      moodys: { rating: 'A1', outlook: 'مستقر (Stable)' },
+      sp: { rating: 'A+', outlook: 'مستقر (Stable)' },
+      fitch: { rating: 'A', outlook: 'مستقر (Stable)' },
+    },
+    policyContext: 'أعلى نسبة دين حكومي بين الاقتصادات المتقدمة (~250% من الناتج)، إلا أن الديون محتفظ بها محلياً بالكامل تقريباً مع ملكية بنك اليابان لنصف السندات، والتحول التدريجي لإنهاء الفائدة الصفرية.',
+    imfIndicators: OFFICIAL_IMF_INDICATOR_MAPPINGS,
+    macroSeries: [
+      { year: 2022, realGdpGrowth: 1.0, nominalGdp: 556, inflationRate: 2.5, centralBankRate: -0.10, sovereignYield10Y: 0.25, sovereignYield2Y: -0.05, exchangeRate: 131.5, interestRateEffective: 0.8 },
+      { year: 2023, realGdpGrowth: 1.9, nominalGdp: 591, inflationRate: 3.2, centralBankRate: -0.10, sovereignYield10Y: 0.65, sovereignYield2Y: 0.05, exchangeRate: 140.5, interestRateEffective: 0.9 },
+      { year: 2024, realGdpGrowth: 0.3, nominalGdp: 609, inflationRate: 2.2, centralBankRate: 0.25, sovereignYield10Y: 0.95, sovereignYield2Y: 0.35, exchangeRate: 152.0, interestRateEffective: 1.1 },
+      { year: 2025, realGdpGrowth: 1.1, nominalGdp: 628, inflationRate: 2.0, centralBankRate: 0.50, sovereignYield10Y: 1.15, sovereignYield2Y: 0.55, exchangeRate: 146.0, interestRateEffective: 1.3 },
+      { year: 2026, realGdpGrowth: 0.8, nominalGdp: 645, inflationRate: 1.8, centralBankRate: 0.75, sovereignYield10Y: 1.25, sovereignYield2Y: 0.65, exchangeRate: 144.0, interestRateEffective: 1.4 },
+      { year: 2027, realGdpGrowth: 0.6, nominalGdp: 660, inflationRate: 1.8, centralBankRate: 0.75, sovereignYield10Y: 1.35, sovereignYield2Y: 0.75, exchangeRate: 142.0, interestRateEffective: 1.5 },
+      { year: 2028, realGdpGrowth: 0.5, nominalGdp: 673, inflationRate: 1.8, centralBankRate: 1.00, sovereignYield10Y: 1.40, sovereignYield2Y: 0.85, exchangeRate: 140.0, interestRateEffective: 1.5 },
+      { year: 2029, realGdpGrowth: 0.5, nominalGdp: 686, inflationRate: 1.8, centralBankRate: 1.00, sovereignYield10Y: 1.40, sovereignYield2Y: 0.85, exchangeRate: 140.0, interestRateEffective: 1.6 },
+      { year: 2030, realGdpGrowth: 0.5, nominalGdp: 700, inflationRate: 1.8, centralBankRate: 1.00, sovereignYield10Y: 1.40, sovereignYield2Y: 0.85, exchangeRate: 140.0, interestRateEffective: 1.6 },
+    ],
+    fiscalSeries: [
+      { year: 2022, oilRevenue: 0, directTaxRevenue: 42, indirectTaxRevenue: 23, taxRevenue: 65, nonTaxRevenue: 12, totalRevenue: 77, wagesAndSalaries: 18, goodsAndServices: 22, subsidiesAndTransfers: 48, capitalExpenditure: 11, debtInterest: 8, totalExpenditure: 107, primaryBalance: -22, overallBalance: -30, primaryBalancePercentGdp: -4.0, overallBalancePercentGdp: -5.4, nominalDebt: 1445, debtToGdp: 260.0, debtDomestic: 1358, debtExternal: 87, debtAmortization: 110, grossFinancingNeeds: 140, gfnPercentGdp: 25.2 },
+      { year: 2023, oilRevenue: 0, directTaxRevenue: 46, indirectTaxRevenue: 25, taxRevenue: 71, nonTaxRevenue: 14, totalRevenue: 85, wagesAndSalaries: 19, goodsAndServices: 24, subsidiesAndTransfers: 50, capitalExpenditure: 12, debtInterest: 9, totalExpenditure: 114, primaryBalance: -20, overallBalance: -29, primaryBalancePercentGdp: -3.4, overallBalancePercentGdp: -4.9, nominalDebt: 1485, debtToGdp: 251.3, debtDomestic: 1395, debtExternal: 90, debtAmortization: 118, grossFinancingNeeds: 147, gfnPercentGdp: 24.9 },
+      { year: 2024, oilRevenue: 0, directTaxRevenue: 47, indirectTaxRevenue: 25, taxRevenue: 72, nonTaxRevenue: 15, totalRevenue: 87, wagesAndSalaries: 20, goodsAndServices: 25, subsidiesAndTransfers: 52, capitalExpenditure: 13, debtInterest: 10, totalExpenditure: 120, primaryBalance: -23, overallBalance: -33, primaryBalancePercentGdp: -3.8, overallBalancePercentGdp: -5.4, nominalDebt: 1525, debtToGdp: 250.4, debtDomestic: 1433, debtExternal: 92, debtAmortization: 125, grossFinancingNeeds: 158, gfnPercentGdp: 25.9 },
+      { year: 2025, oilRevenue: 0, directTaxRevenue: 50, indirectTaxRevenue: 26, taxRevenue: 76, nonTaxRevenue: 16, totalRevenue: 92, wagesAndSalaries: 21, goodsAndServices: 26, subsidiesAndTransfers: 53, capitalExpenditure: 13, debtInterest: 11, totalExpenditure: 124, primaryBalance: -21, overallBalance: -32, primaryBalancePercentGdp: -3.3, overallBalancePercentGdp: -5.1, nominalDebt: 1560, debtToGdp: 248.4, debtDomestic: 1466, debtExternal: 94, debtAmortization: 132, grossFinancingNeeds: 164, gfnPercentGdp: 26.1 },
+      { year: 2026, oilRevenue: 0, directTaxRevenue: 53, indirectTaxRevenue: 27, taxRevenue: 80, nonTaxRevenue: 17, totalRevenue: 97, wagesAndSalaries: 22, goodsAndServices: 27, subsidiesAndTransfers: 54, capitalExpenditure: 14, debtInterest: 12, totalExpenditure: 129, primaryBalance: -20, overallBalance: -32, primaryBalancePercentGdp: -3.1, overallBalancePercentGdp: -5.0, nominalDebt: 1595, debtToGdp: 247.3, debtDomestic: 1499, debtExternal: 96, debtAmortization: 138, grossFinancingNeeds: 170, gfnPercentGdp: 26.4 },
+      { year: 2027, oilRevenue: 0, directTaxRevenue: 56, indirectTaxRevenue: 28, taxRevenue: 84, nonTaxRevenue: 17, totalRevenue: 101, wagesAndSalaries: 23, goodsAndServices: 28, subsidiesAndTransfers: 55, capitalExpenditure: 14, debtInterest: 13, totalExpenditure: 133, primaryBalance: -19, overallBalance: -32, primaryBalancePercentGdp: -2.9, overallBalancePercentGdp: -4.8, nominalDebt: 1630, debtToGdp: 247.0, debtDomestic: 1532, debtExternal: 98, debtAmortization: 144, grossFinancingNeeds: 176, gfnPercentGdp: 26.7 },
+      { year: 2028, oilRevenue: 0, directTaxRevenue: 58, indirectTaxRevenue: 29, taxRevenue: 87, nonTaxRevenue: 18, totalRevenue: 105, wagesAndSalaries: 24, goodsAndServices: 29, subsidiesAndTransfers: 56, capitalExpenditure: 14, debtInterest: 14, totalExpenditure: 137, primaryBalance: -18, overallBalance: -32, primaryBalancePercentGdp: -2.7, overallBalancePercentGdp: -4.8, nominalDebt: 1665, debtToGdp: 247.4, debtDomestic: 1565, debtExternal: 100, debtAmortization: 150, grossFinancingNeeds: 182, gfnPercentGdp: 27.0 },
+      { year: 2029, oilRevenue: 0, directTaxRevenue: 61, indirectTaxRevenue: 30, taxRevenue: 91, nonTaxRevenue: 18, totalRevenue: 109, wagesAndSalaries: 25, goodsAndServices: 30, subsidiesAndTransfers: 57, capitalExpenditure: 15, debtInterest: 15, totalExpenditure: 142, primaryBalance: -18, overallBalance: -33, primaryBalancePercentGdp: -2.6, overallBalancePercentGdp: -4.8, nominalDebt: 1700, debtToGdp: 247.8, debtDomestic: 1598, debtExternal: 102, debtAmortization: 155, grossFinancingNeeds: 188, gfnPercentGdp: 27.4 },
+      { year: 2030, oilRevenue: 0, directTaxRevenue: 64, indirectTaxRevenue: 31, taxRevenue: 95, nonTaxRevenue: 19, totalRevenue: 114, wagesAndSalaries: 26, goodsAndServices: 31, subsidiesAndTransfers: 58, capitalExpenditure: 15, debtInterest: 16, totalExpenditure: 146, primaryBalance: -16, overallBalance: -32, primaryBalancePercentGdp: -2.3, overallBalancePercentGdp: -4.6, nominalDebt: 1735, debtToGdp: 247.9, debtDomestic: 1630, debtExternal: 105, debtAmortization: 160, grossFinancingNeeds: 192, gfnPercentGdp: 27.4 },
+    ],
+    debtTranches: [
+      { id: 'JGB-10Y-BENCH', name: 'سندات الحكومة اليابانية القياسية 10 سنوات (10-Yr Benchmark JGB)', type: 'سندات خزانة محلية (JGBs)', currency: 'JPY', couponRate: 1.10, issuanceYear: 2024, maturityYear: 2034, amount: 45, rateType: 'ثابت (Fixed)' },
+      { id: 'JGB-30Y-SUPER', name: 'سندات فائقة الأجل 30 سنة (30-Yr Super-long JGB)', type: 'سندات خزانة محلية (JGBs)', currency: 'JPY', couponRate: 1.85, issuanceYear: 2023, maturityYear: 2053, amount: 28, rateType: 'ثابت (Fixed)' },
+      { id: 'JGB-TBILLS-6M', name: 'أذونات خزانة يابانية قصيرة الأجل (Treasury Discount Bills T-Bills)', type: 'أذونات خزانة محلية (T-Bills)', currency: 'JPY', couponRate: 0.25, issuanceYear: 2025, maturityYear: 2025, amount: 60, rateType: 'ثابت (Fixed)' },
+      { id: 'JGB-CLIMATE-TRANS', name: 'سندات التحول المناخي السيادية (Japan Climate Transition Bonds)', type: 'سندات حكومية قياسية (Benchmark Bonds)', currency: 'JPY', couponRate: 0.95, issuanceYear: 2024, maturityYear: 2034, amount: 15, rateType: 'ثابت (Fixed)' },
+    ],
+  },
+];
